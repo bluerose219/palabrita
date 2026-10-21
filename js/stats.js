@@ -124,7 +124,7 @@ const Stats = {
     Stats.renderWeek();
 
     const recent = Stats.getRecentAccuracy(10);
-    Stats.drawAccuracyChart("stats-chart", recent.labels, recent.values);
+    Stats.drawAccuracyBars("stats-chart", recent.labels, recent.values);
     Stats.renderHistory(summary.history);
   },
 
@@ -226,43 +226,35 @@ const Stats = {
     document.getElementById("week-today").disabled = monday === thisMonday;
   },
 
-  // 정답률(0~100) 선 그래프를 SVG로 그립니다.
-  // labels: x축 글자 목록, values: 정답률 목록 (labels와 개수가 같아야 함)
-  drawAccuracyChart(targetId, labels, values) {
+  // 최근 퀴즈 정답률(0~100)을 막대그래프로 그립니다.
+  // labels: 막대 아래 글자 목록, values: 정답률 목록 (labels와 개수가 같아야 함)
+  drawAccuracyBars(targetId, labels, values) {
     const target = document.getElementById(targetId);
     if (!target) {
       return;
     }
-
     if (values.length === 0) {
       target.innerHTML = '<p class="muted">아직 퀴즈 기록이 없어요.</p>';
       return;
     }
 
-    const width = 320;
-    const height = 170;
+    const width = 340;
+    const height = 180;
     const left = 34;
-    const right = 14;
-    const top = 16;
+    const right = 8;
+    const top = 18;
     const bottom = 26;
     const plotWidth = width - left - right;
     const plotHeight = height - top - bottom;
+    // 막대 칸 하나의 너비. 막대는 칸의 60%만 차지합니다. (기록이 적어도 막대가 너무 넓어지지 않게 최소 5칸 기준)
+    const slot = plotWidth / Math.max(values.length, 5);
+    const barWidth = Math.min(slot * 0.6, 26);
 
-    // 값 하나를 화면 좌표로 바꿉니다.
-    function x(index) {
-      if (values.length === 1) {
-        return left + plotWidth / 2;
-      }
-      return left + (plotWidth * index) / (values.length - 1);
-    }
     function y(value) {
       return top + plotHeight - (plotHeight * value) / 100;
     }
 
-    let svg = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="최근 ${values.length}회 퀴즈 정답률">`;
-    svg += `<defs><linearGradient id="${targetId}-fill" x1="0" y1="0" x2="0" y2="1">`;
-    svg += '<stop offset="0" stop-color="#7b6cd9" stop-opacity="0.28"/>';
-    svg += '<stop offset="1" stop-color="#7b6cd9" stop-opacity="0"/></linearGradient></defs>';
+    let svg = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="최근 ${values.length}회 퀴즈 정답률 막대그래프">`;
 
     // 가로 눈금선 (0%, 50%, 100%)
     for (const tick of [0, 50, 100]) {
@@ -270,22 +262,15 @@ const Stats = {
       svg += `<text x="${left - 6}" y="${y(tick) + 3}" text-anchor="end">${tick}%</text>`;
     }
 
-    // 선과 아래 채우기
-    const points = values.map((value, index) => `${x(index)} ${y(value)}`);
-    const line = "M" + points.join(" L");
-    const lastIndex = values.length - 1;
-    const area = `${line} L${x(lastIndex)} ${y(0)} L${x(0)} ${y(0)} Z`;
-    svg += `<path d="${area}" fill="url(#${targetId}-fill)"/>`;
-    svg += `<path d="${line}" fill="none" stroke="#7b6cd9" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
-
-    // 마지막 값 강조
-    const lastValue = values[lastIndex];
-    svg += `<circle cx="${x(lastIndex)}" cy="${y(lastValue)}" r="4.5" fill="#ffffff" stroke="#7b6cd9" stroke-width="2"/>`;
-    svg += `<text class="chart-last" x="${x(lastIndex) - 8}" y="${y(lastValue) - 8}" text-anchor="end">${lastValue}%</text>`;
-
-    // x축 글자
-    labels.forEach((label, index) => {
-      svg += `<text x="${x(index)}" y="${height - 8}" text-anchor="middle">${label}</text>`;
+    // 막대: 가장 최근 막대만 진한 보라, 나머지는 연한 보라. 막대 위에 정답률 숫자
+    values.forEach((value, index) => {
+      const x = left + slot * index + (slot - barWidth) / 2;
+      const barTop = y(value);
+      const isLast = index === values.length - 1;
+      const color = isLast ? "#7b6cd9" : "#b9aef2";
+      svg += `<rect x="${x}" y="${barTop}" width="${barWidth}" height="${y(0) - barTop}" rx="4" fill="${color}"><title>${labels[index]} 정답률 ${value}%</title></rect>`;
+      svg += `<text class="${isLast ? "chart-last" : ""}" x="${x + barWidth / 2}" y="${barTop - 5}" text-anchor="middle">${value}</text>`;
+      svg += `<text x="${x + barWidth / 2}" y="${height - 8}" text-anchor="middle">${labels[index]}</text>`;
     });
 
     target.innerHTML = svg + "</svg>";

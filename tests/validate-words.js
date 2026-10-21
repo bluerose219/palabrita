@@ -24,6 +24,8 @@ const CATEGORY_COUNTS = {
 const TOTAL_COUNT = 500;
 
 const REQUIRED_FIELDS = ["id", "spanish", "korean", "partOfSpeech", "category", "level"];
+// gender: 명사만, present: 동사의 현재시제 6개 형태, note: 덧붙이는 설명
+const OPTIONAL_FIELDS = ["gender", "present", "note"];
 const LEVELS = ["A1", "A2"];
 const PARTS_OF_SPEECH = [
   "noun", "verb", "adjective", "adverb", "verbPhrase",
@@ -96,9 +98,26 @@ function checkFields(word, index) {
     errors.push(`${label}: korean에 품사 약어가 들어 있습니다. ("${word.korean}")`);
   }
 
+  // 동사와 동사구는 현재시제 6개 형태(present)가 있어야 하고, 다른 품사에는 없어야 합니다.
+  const isVerb = word.partOfSpeech === "verb" || word.partOfSpeech === "verbPhrase";
+  if (isVerb) {
+    const ok =
+      Array.isArray(word.present) &&
+      word.present.length === 6 &&
+      word.present.every((form) => typeof form === "string" && form.trim() !== "" && form === form.trim());
+    if (!ok) {
+      errors.push(`${label}: 동사인데 present가 6개의 글자 목록이 아닙니다.`);
+    }
+  } else if ("present" in word) {
+    errors.push(`${label}: 동사가 아닌데 present가 있습니다.`);
+  }
+  if ("note" in word && (typeof word.note !== "string" || word.note.trim() === "")) {
+    errors.push(`${label}: note 값이 비어 있거나 문자열이 아닙니다.`);
+  }
+
   // 정해진 필드 말고 다른 필드가 있으면 알려 줍니다.
   for (const key of Object.keys(word)) {
-    if (!REQUIRED_FIELDS.includes(key) && key !== "gender") {
+    if (!REQUIRED_FIELDS.includes(key) && !OPTIONAL_FIELDS.includes(key)) {
       errors.push(`${label}: 알 수 없는 필드 "${key}"가 있습니다.`);
     }
   }

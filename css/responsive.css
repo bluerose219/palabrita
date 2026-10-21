@@ -1,20 +1,14 @@
 /* ==========================================================
    Palabrita 반응형 스타일
-   1100px 이하: 홈 카드 2열
+   1100px 이하: 통계 카드 2열, 홈 카테고리 목록 1열
    1024px 이하: 사이드바에 아이콘만 표시
    768px 이하: 사이드바를 하단 탭 바로, 카드를 1열로
    화면별 세부 조정은 7단계에서 보완합니다.
    ========================================================== */
 
 @media (max-width: 1100px) {
-  .home-top {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .chart-card,
-  .today-card {
-    grid-row: auto;
-    grid-column: span 2;
+  .cat-list {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .stats-grid {
@@ -103,22 +97,67 @@
     padding: 20px 16px 24px;
   }
 
-  .search {
-    width: 100%;
+  /* 인사말은 한 줄 전체, 그 아래에 검색창과 약어 설명 버튼을 나란히 */
+  .greeting {
+    flex-basis: 100%;
   }
 
-  .home-top,
-  .cat-grid {
+  .search {
+    flex: 1;
+    width: auto;
+  }
+
+  /* 홈: 3단계와 오늘의 단어를 세로로 쌓음 */
+  .steps,
+  .hero {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .chart-card,
-  .today-card {
-    grid-column: auto;
+  .step {
+    border-right: 0;
+    border-bottom: 1px solid var(--glass-border);
   }
 
-  .cat-card {
-    grid-template-columns: 90px minmax(0, 1fr);
+  .step:last-child {
+    border-bottom: 0;
+  }
+
+  .hero-stats {
+    border-top: 1px solid var(--glass-border);
+    border-left: 0;
+  }
+
+  .hero-es {
+    font-size: 34px;
+  }
+
+  /* 카테고리 목록: 진행 막대를 조금 짧게 */
+  .cat-row {
+    grid-template-columns: 32px minmax(0, 1fr) 70px 34px;
+    gap: 10px;
+  }
+
+  .cat-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* 카테고리 버튼은 한 줄로 두고 옆으로 밀어서 봅니다 (여러 줄로 쌓이면 표가 너무 아래로 밀림) */
+  .cat-filter {
+    flex-wrap: wrap;
+  }
+
+  .cat-filter-label {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .cat-chips {
+    flex: 1;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
   }
 
   /* 단어장: 제목 줄과 도구 줄이 줄바꿈되도록 */
@@ -163,13 +202,23 @@
     width: auto;
   }
 
-  #vocab-table th:nth-child(4),
-  #vocab-table th:nth-child(5) {
+  /* 번호, 난이도, 구분, 외운 단어 열은 내용만큼만 */
+  #vocab-table th:nth-child(1),
+  #vocab-table th:nth-child(5),
+  #vocab-table th:nth-child(6),
+  #vocab-table th:nth-child(7) {
     width: 1%;
   }
 
-  #vocab-table th:nth-child(3),
-  #vocab-table td:nth-child(3) {
+  /* "외운 단어" 제목은 좁은 화면에서 두 줄로 */
+  .word-table .memo-head {
+    white-space: normal;
+    line-height: 1.3;
+  }
+
+  /* 카테고리 열 숨김 */
+  #vocab-table th:nth-child(4),
+  #vocab-table td:nth-child(4) {
     display: none;
   }
 
@@ -182,6 +231,24 @@
   .word-table td.ko {
     font-size: 14px;
     overflow-wrap: anywhere;
+  }
+
+  /* 이전/다음은 화살표만 남기고(글자는 화면 읽기 프로그램용 aria-label로), 번호를 조금 작게 */
+  .pager-text span {
+    display: none;
+  }
+
+  .pager-nums {
+    gap: 0;
+  }
+
+  .pager-num {
+    min-width: 26px;
+    font-size: 13px;
+  }
+
+  .pager-gap {
+    padding: 0 1px;
   }
 
   /* 오답노트 표: 날짜 열을 숨김 */
@@ -205,6 +272,14 @@
 
   .setting-label {
     width: 100%;
+  }
+
+  .setting-top {
+    flex-wrap: wrap;
+  }
+
+  .setting-top .setting-label {
+    padding-top: 0;
   }
 
   /* 통계: 그래프와 기록을 1열로, 주간 기록은 요약이 위, 막대가 아래 */
@@ -233,5 +308,39 @@
 
   .toast {
     bottom: 92px;
+  }
+}
+
+/* 480px 이하: 페이지 번호 줄이 한 줄에 들어가도록 버튼을 더 작게, 번호 열을 좁게 */
+@media (max-width: 480px) {
+  .pager-num {
+    min-width: 21px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 12px;
+  }
+
+  .pager-num[aria-current]::after {
+    right: 4px;
+    left: 4px;
+  }
+
+  /* 동사 변화표는 1열로 (yo부터 ellos까지 차례로) */
+  .conj-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
+
+  /* 난이도 열도 숨겨 뜻 칸을 넓힙니다 (난이도는 상세 창에서 확인) */
+  #vocab-table th:nth-child(5),
+  #vocab-table td:nth-child(5) {
+    display: none;
+  }
+
+  .word-table td.row-num,
+  .word-table th:first-child {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 }

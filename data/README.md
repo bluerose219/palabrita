@@ -34,6 +34,8 @@
 | `gender` | 명사만 | 명사 성별 (아래 표). 명사가 아니면 넣지 않음 | `"masculine"` |
 | `category` | 예 | 카테고리 키 (아래 표) | `"school"` |
 | `level` | 예 | `"A1"` 또는 `"A2"` | `"A1"` |
+| `present` | 동사만 | 현재시제 6개 형태. yo, tú, él/ella/ud., nosotros/as, vosotros/as, ellos/ellas/uds. 순서 | `["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"]` |
+| `note` | 아니요 | 덧붙이는 설명. 상세 창의 변화표 아래에 보임 | gustar의 쓰임 설명 |
 
 ```json
 {
@@ -132,6 +134,8 @@ node tests/validate-words.js
 - level, partOfSpeech, gender 값 범위
 - gender가 명사에만 있는지
 - korean에 품사 약어가 들어 있지 않은지
+- 동사와 동사구에는 `present`가 6개의 글자 목록으로 있고, 다른 품사에는 없는지
+- `note`가 있으면 빈 글자가 아닌지
 
 - 양성/공통성 명사 예시 단어(mar, azúcar, internet, estudiante, artista, periodista)와 libro, casa의 성별
 - 같은 korean 뜻이 두 번 나오면 경고 (객관식 보기가 헷갈릴 수 있음, 실패는 아님)
