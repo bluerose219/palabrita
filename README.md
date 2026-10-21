@@ -21,7 +21,10 @@ HTML5, CSS3, Vanilla JavaScript, JSON, localStorage, Git/GitHub, GitHub Pages
 
 ## 배포 URL
 
-아직 배포하지 않았습니다. 8단계에서 GitHub Pages로 배포한 뒤 이곳에 주소를 적습니다.
+https://bluerose219.github.io/palabrita/
+
+- 저장소: https://github.com/bluerose219/palabrita
+- `main` 브랜치에 push하면 GitHub Pages가 몇 분 안에 자동으로 다시 배포합니다.
 
 ## 실행 방법
 
