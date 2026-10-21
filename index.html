@@ -4,15 +4,112 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Palabrita</title>
+  <meta name="description" content="스페인어 A1~A2 기본 단어 학습 사이트">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-  <!-- 화면 구성은 2단계에서 작성합니다 -->
-  <main id="app">
-    <h1>Palabrita</h1>
-    <p>스페인어 단어 학습 사이트를 준비하고 있습니다.</p>
-  </main>
+  <!-- SVG 아이콘 모음: <svg class="icon"><use href="#i-home"/></svg> 형태로 사용합니다 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 21H20"/><path d="M8 7h8"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14"/><path d="M12 17.5h.01"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><path d="M9.5 13.5l5 5M14.5 13.5l-5 5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5h.01"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.5h.01"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></symbol>
+  </svg>
+
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+
+  <div class="app">
+    <nav class="sidebar" aria-label="주 메뉴">
+      <a class="logo" href="#home">Palabrita</a>
+      <a class="nav-item" href="#home" data-view="home"><svg class="icon"><use href="#i-home"/></svg><span>홈</span></a>
+      <a class="nav-item" href="#vocabulary" data-view="vocabulary"><svg class="icon"><use href="#i-book"/></svg><span>단어장</span></a>
+      <a class="nav-item" href="#quiz" data-view="quiz"><svg class="icon"><use href="#i-quiz"/></svg><span>퀴즈</span></a>
+      <a class="nav-item" href="#wrong" data-view="wrong"><svg class="icon"><use href="#i-note"/></svg><span>오답노트</span></a>
+      <div class="nav-sep"></div>
+      <a class="nav-item" href="#stats" data-view="stats"><svg class="icon"><use href="#i-chart"/></svg><span>학습 통계</span></a>
+      <p class="sidebar-foot">스페인어 A1~A2<br>기본 단어 500개</p>
+    </nav>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 class="greeting">¡Hola! 오늘도 한 단어씩<small>천천히, 매일 조금씩 익혀 봐요</small></h1>
+        <label class="search">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="top-search" type="search" placeholder="스페인어 또는 한국어로 검색" aria-label="단어 검색">
+        </label>
+        <a class="badge-pill" href="#wrong" id="wrong-badge"><svg class="icon"><use href="#i-alert"/></svg>오답 <span id="wrong-badge-count">0</span></a>
+      </header>
+
+      <!-- 홈 -->
+      <section class="view" data-section="home" aria-labelledby="home-title">
+        <h2 class="section-title" id="home-title" hidden>홈</h2>
+        <div class="home-top">
+          <div class="card chart-card">
+            <p class="card-title">최근 퀴즈 정답률</p>
+            <div class="chart" id="home-chart"></div>
+          </div>
+          <div class="card stat"><span class="stat-value" id="home-total">0</span><span class="stat-label">전체 단어</span></div>
+          <div class="card stat"><span class="stat-value" id="home-learned">0</span><span class="stat-label">학습한 단어</span></div>
+          <div class="card today-card">
+            <span class="eyebrow">오늘의 단어</span>
+            <p class="today-word" id="today-word"></p>
+            <p class="today-mean" id="today-mean"></p>
+            <div class="meta-row" id="today-meta"></div>
+            <div class="today-actions">
+              <a class="btn btn-primary" href="#quiz">퀴즈 시작</a>
+              <a class="btn" href="#vocabulary">단어장 보기</a>
+            </div>
+          </div>
+          <div class="card stat"><span class="stat-value" id="home-accuracy">0%</span><span class="stat-label">퀴즈 정답률</span></div>
+          <div class="card stat"><span class="stat-value is-wrong" id="home-wrong">0</span><span class="stat-label">오답 단어</span></div>
+        </div>
+
+        <div class="section-head">
+          <h2 class="section-title">카테고리별 학습</h2>
+          <a class="btn" href="#vocabulary">전체 보기 <svg class="icon"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="cat-grid" id="cat-grid"></div>
+      </section>
+
+      <!-- 단어장 (4단계) -->
+      <section class="view" data-section="vocabulary" hidden>
+        <h2 class="section-title">단어장</h2>
+        <div class="card placeholder"><p class="muted">단어장은 4단계에서 구현합니다.</p></div>
+      </section>
+
+      <!-- 퀴즈 (5단계) -->
+      <section class="view" data-section="quiz" hidden>
+        <h2 class="section-title">퀴즈</h2>
+        <div class="card placeholder"><p class="muted">퀴즈는 5단계에서 구현합니다.</p></div>
+      </section>
+
+      <!-- 오답노트 (6단계) -->
+      <section class="view" data-section="wrong" hidden>
+        <h2 class="section-title">오답노트</h2>
+        <div class="card placeholder"><p class="muted">오답노트는 6단계에서 구현합니다.</p></div>
+      </section>
+
+      <!-- 학습 통계 (6단계) -->
+      <section class="view" data-section="stats" hidden>
+        <h2 class="section-title">학습 통계</h2>
+        <div class="card placeholder"><p class="muted">학습 통계는 6단계에서 구현합니다.</p></div>
+      </section>
+    </main>
+  </div>
 
   <!-- 순서 중요: storage.js가 가장 먼저, app.js가 가장 나중 -->
   <script src="js/storage.js"></script>

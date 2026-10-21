@@ -1,1 +1,119 @@
-/* Palabrita 반응형 스타일 (7단계에서 작성) */
+/* ==========================================================
+   Palabrita 반응형 스타일
+   1100px 이하: 홈 카드 2열
+   1024px 이하: 사이드바에 아이콘만 표시
+   768px 이하: 사이드바를 하단 탭 바로, 카드를 1열로
+   화면별 세부 조정은 7단계에서 보완합니다.
+   ========================================================== */
+
+@media (max-width: 1100px) {
+  .home-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chart-card,
+  .today-card {
+    grid-row: auto;
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1024px) {
+  .app {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  /* 로고는 첫 글자만 보이게 */
+  .logo {
+    padding: 0 0 22px;
+    font-size: 0;
+    text-align: center;
+  }
+
+  .logo::first-letter {
+    font-size: 24px;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .nav-item span,
+  .sidebar-foot {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 12px 16px 96px;
+  }
+
+  /* backdrop-filter가 있으면 안쪽의 position: fixed가 화면이 아니라 이 프레임 기준이 되므로
+     하단 탭 바가 화면 아래에 고정되도록 모바일에서는 프레임의 블러와 잘림을 끕니다. */
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    overflow: visible;
+    border-radius: 24px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* 사이드바를 화면 아래 탭 바로 */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, 0.82);
+    border-top: 1px solid var(--glass-border);
+    border-right: 0;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+  }
+
+  .logo,
+  .nav-sep {
+    display: none;
+  }
+
+  .nav-item {
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .nav-item span {
+    display: block;
+  }
+
+  .main {
+    padding: 20px 16px 24px;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .home-top,
+  .cat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chart-card,
+  .today-card {
+    grid-column: auto;
+  }
+
+  .cat-card {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+}
