@@ -6,6 +6,7 @@
 palabrita/
 ├── README.md
 ├── AGENTS.md
+├── CLAUDE.md
 ├── .gitignore
 ├── .nojekyll
 ├── index.html

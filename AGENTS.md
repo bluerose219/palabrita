@@ -45,6 +45,7 @@ Palabrita 프로젝트에서 작업하는 사람과 AI 에이전트가 따라야
 
 | 파일 | 역할 |
 |---|---|
+| `CLAUDE.md` | Claude Code가 새 대화를 시작할 때 자동으로 읽는 안내. 이 문서와 handover.md를 먼저 읽도록 안내 |
 | `index.html` | 단일 페이지. 화면별 `<section>`과 스크립트 로드 |
 | `css/style.css` | CSS 변수, 공통 컴포넌트, 화면별 스타일 |
 | `css/responsive.css` | 1024px, 768px 기준 반응형 스타일 |
