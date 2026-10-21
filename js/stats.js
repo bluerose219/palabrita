@@ -1,7 +1,51 @@
 // 학습 통계와 학습 시간 측정
-// 2단계: 정답률 선 그래프 그리기 함수만 있습니다. 통계 화면과 학습 시간 측정은 6단계에서 작성합니다.
+// 통계 화면과 학습 시간 측정은 6단계에서 작성합니다.
+
+// 한국 시간은 UTC보다 9시간 빠릅니다.
+const KST_OFFSET = 9 * 60 * 60 * 1000;
 
 const Stats = {
+  // 한국 시간 기준 날짜 문자열 "YYYY-MM-DD"
+  kstDateKey(ms) {
+    return new Date(ms + KST_OFFSET).toISOString().slice(0, 10);
+  },
+
+  // 홈과 통계 화면에 보여 줄 숫자를 계산합니다.
+  // 지금 단어장에 없는 단어(삭제한 사용자 단어 등)의 기록은 세지 않습니다.
+  getSummary() {
+    const stats = Storage.getStats();
+    const wrongAnswers = Storage.getWrongAnswers();
+    const allWords = Vocabulary.getAllWords();
+    const existingIds = new Set(allWords.map((word) => word.id));
+
+    const learnedIds = stats.learnedIds.filter((id) => existingIds.has(id));
+    const wrongIds = Object.keys(wrongAnswers).filter((id) => existingIds.has(id));
+    let accuracy = 0;
+    if (stats.totalQuestions > 0) {
+      accuracy = Math.round((stats.correctAnswers / stats.totalQuestions) * 100);
+    }
+
+    return {
+      totalWords: allWords.length,
+      learnedIds: learnedIds,
+      learnedCount: learnedIds.length,
+      wrongCount: wrongIds.length,
+      accuracy: accuracy,
+      quizCount: stats.quizCount,
+      totalQuestions: stats.totalQuestions,
+      history: stats.history,
+    };
+  },
+
+  // 최근 퀴즈 count회의 날짜(MM-DD)와 정답률
+  getRecentAccuracy(count) {
+    const recent = Storage.getStats().history.slice(-count);
+    return {
+      labels: recent.map((item) => item.date.slice(5)),
+      values: recent.map((item) => (item.total > 0 ? Math.round((item.correct / item.total) * 100) : 0)),
+    };
+  },
+
   // 정답률(0~100) 선 그래프를 SVG로 그립니다.
   // labels: x축 글자 목록, values: 정답률 목록 (labels와 개수가 같아야 함)
   drawAccuracyChart(targetId, labels, values) {

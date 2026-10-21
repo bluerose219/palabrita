@@ -54,6 +54,8 @@
         <a class="badge-pill" href="#wrong" id="wrong-badge"><svg class="icon"><use href="#i-alert"/></svg>오답 <span id="wrong-badge-count">0</span></a>
       </header>
 
+      <p class="load-error" id="load-error" role="alert" hidden></p>
+
       <!-- 홈 -->
       <section class="view" data-section="home" aria-labelledby="home-title">
         <h2 class="section-title" id="home-title" hidden>홈</h2>
@@ -80,15 +82,69 @@
 
         <div class="section-head">
           <h2 class="section-title">카테고리별 학습</h2>
-          <a class="btn" href="#vocabulary">전체 보기 <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <button class="btn" type="button" data-go-vocab="all">전체 보기 <svg class="icon"><use href="#i-arrow"/></svg></button>
         </div>
         <div class="cat-grid" id="cat-grid"></div>
       </section>
 
-      <!-- 단어장 (4단계) -->
-      <section class="view" data-section="vocabulary" hidden>
-        <h2 class="section-title">단어장</h2>
-        <div class="card placeholder"><p class="muted">단어장은 4단계에서 구현합니다.</p></div>
+      <!-- 단어장 -->
+      <section class="view vocab-view" data-section="vocabulary" hidden>
+        <div class="section-head">
+          <h2 class="section-title">단어장</h2>
+          <div class="head-actions">
+            <div class="pop-anchor">
+              <button class="btn" type="button" id="abbr-button" aria-expanded="false" aria-controls="abbr-pop"><svg class="icon"><use href="#i-info"/></svg>약어 설명</button>
+              <div class="abbr-pop" id="abbr-pop" role="dialog" aria-labelledby="abbr-title" tabindex="-1" hidden>
+                <div class="pop-head">
+                  <h3 id="abbr-title">품사 약어</h3>
+                  <button class="icon-btn" type="button" id="abbr-close" aria-label="약어 설명 닫기"><svg class="icon"><use href="#i-close"/></svg></button>
+                </div>
+                <div class="abbr-scroll">
+                  <table class="abbr-table">
+                    <thead><tr><th>약어</th><th>설명</th></tr></thead>
+                    <tbody id="abbr-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" type="button" id="add-word"><svg class="icon"><use href="#i-plus"/></svg>단어 추가</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <select id="vocab-category" aria-label="카테고리"></select>
+          <select id="vocab-level" aria-label="난이도">
+            <option value="all">전체 난이도</option>
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+          </select>
+          <select id="vocab-source" aria-label="구분">
+            <option value="all">기본 + 내 단어</option>
+            <option value="base">기본 단어만</option>
+            <option value="user">내 단어만</option>
+          </select>
+          <span class="spacer"></span>
+          <span class="legend"><i class="dot dot-base"></i>기본</span>
+          <span class="legend"><i class="dot dot-user"></i>내 단어</span>
+          <span class="muted" id="vocab-count"></span>
+        </div>
+
+        <div class="toolbar">
+          <span class="muted">학습 모드</span>
+          <button class="toggle" type="button" id="hide-es" aria-pressed="false"><svg class="icon"><use href="#i-eye"/></svg>스페인어 가리기</button>
+          <button class="toggle" type="button" id="hide-ko" aria-pressed="false"><svg class="icon"><use href="#i-eye"/></svg>뜻 가리기</button>
+          <button class="toggle" type="button" id="shuffle"><svg class="icon"><use href="#i-shuffle"/></svg>섞기</button>
+          <button class="toggle" type="button" id="reset-order" disabled>원래 순서</button>
+          <span class="muted hint">가린 칸을 누르면 그 칸만 보여요. 줄을 누르면 상세 정보가 열려요.</span>
+        </div>
+
+        <div class="card table-wrap">
+          <table id="vocab-table" class="word-table">
+            <colgroup><col class="col-es"><col class="col-ko"><col class="col-cat"><col class="col-level"><col class="col-type"></colgroup>
+            <thead><tr><th>스페인어</th><th>뜻</th><th>카테고리</th><th>난이도</th><th>구분</th></tr></thead>
+            <tbody id="vocab-body"></tbody>
+          </table>
+        </div>
       </section>
 
       <!-- 퀴즈 (5단계) -->
@@ -110,6 +166,66 @@
       </section>
     </main>
   </div>
+
+  <!-- 단어 상세 창 -->
+  <div class="overlay" id="detail-overlay" hidden>
+    <div class="dialog card" id="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title" tabindex="-1">
+      <div class="pop-head">
+        <span class="eyebrow" id="detail-type">기본 단어</span>
+        <button class="icon-btn" type="button" data-close aria-label="상세 정보 닫기"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <p class="detail-line" id="detail-title"></p>
+      <div class="meta-row" id="detail-meta"></div>
+      <p class="muted" id="detail-note"></p>
+      <div class="dialog-actions" id="detail-actions" hidden>
+        <button class="btn" type="button" id="detail-edit">수정</button>
+        <button class="btn btn-danger" type="button" id="detail-delete">삭제</button>
+      </div>
+      <div class="confirm-box" id="delete-confirm" hidden>
+        <p>이 단어를 삭제할까요? 이 단어의 오답 기록도 함께 지워집니다.</p>
+        <div class="dialog-actions">
+          <button class="btn" type="button" id="delete-cancel">취소</button>
+          <button class="btn btn-danger-solid" type="button" id="delete-ok">삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 단어 추가, 수정 창 -->
+  <div class="overlay" id="word-form-overlay" hidden>
+    <form class="dialog card" id="word-form" role="dialog" aria-modal="true" aria-labelledby="word-form-title" novalidate>
+      <div class="pop-head">
+        <h3 id="word-form-title">단어 추가</h3>
+        <button class="icon-btn" type="button" data-close aria-label="창 닫기"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <label class="field">
+        <span>스페인어</span>
+        <input id="form-spanish" type="text" maxlength="60" autocomplete="off" placeholder="예: mochila">
+      </label>
+      <label class="field">
+        <span>뜻</span>
+        <input id="form-korean" type="text" maxlength="80" autocomplete="off" placeholder="여러 뜻은 쉼표로 구분 (예: 배낭, 책가방)">
+      </label>
+      <div class="field-row">
+        <label class="field"><span>품사</span><select id="form-pos"></select></label>
+        <label class="field" id="form-gender-field" hidden><span>성별</span><select id="form-gender"></select></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>카테고리</span><select id="form-category"></select></label>
+        <label class="field"><span>난이도</span>
+          <select id="form-level"><option value="A1">A1</option><option value="A2">A2</option></select>
+        </label>
+      </div>
+      <p class="form-message" id="form-message" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button class="btn" type="button" data-close>취소</button>
+        <button class="btn btn-primary" type="submit" id="form-submit">저장</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 짧은 알림 -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <!-- 순서 중요: storage.js가 가장 먼저, app.js가 가장 나중 -->
   <script src="js/storage.js"></script>

@@ -116,4 +116,39 @@
   .cat-card {
     grid-template-columns: 90px minmax(0, 1fr);
   }
+
+  /* 단어장: 제목 줄과 도구 줄이 줄바꿈되도록 */
+  .section-head {
+    flex-wrap: wrap;
+  }
+
+  .toolbar .spacer {
+    display: none;
+  }
+
+  /* 약어 설명은 화면 아래에서 올라오는 시트로 */
+  .abbr-pop {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    width: auto;
+    max-width: none;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-radius: 22px 22px 0 0;
+  }
+
+  .abbr-scroll {
+    max-height: 50vh;
+  }
+
+  .field-row {
+    flex-direction: column;
+  }
+
+  .toast {
+    bottom: 92px;
+  }
 }
