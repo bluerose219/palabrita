@@ -171,7 +171,7 @@ const Vocabulary = {
 
   // 검색할 때는 악센트를 빼고 비교합니다. (cafe로 café를 찾을 수 있게)
   removeAccents(text) {
-    return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   },
 
   // 철자가 같은 다른 단어들 (exceptId는 비교에서 뺌)
