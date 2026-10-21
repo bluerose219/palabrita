@@ -152,6 +152,48 @@
     flex-direction: column;
   }
 
+  /* 단어장 표: 카테고리 열을 숨겨 가로 스크롤 없이 보이게 (카테고리는 상세 창에서 확인) */
+  /* 칸을 숨기면 고정 열 너비(colgroup)가 한 칸씩 밀리므로 자동 너비로 바꿉니다. */
+  #vocab-table {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  #vocab-table col {
+    width: auto;
+  }
+
+  #vocab-table th:nth-child(4),
+  #vocab-table th:nth-child(5) {
+    width: 1%;
+  }
+
+  #vocab-table th:nth-child(3),
+  #vocab-table td:nth-child(3) {
+    display: none;
+  }
+
+  .word-table th,
+  .word-table td {
+    padding: 10px 8px;
+  }
+
+  .word-table td.es,
+  .word-table td.ko {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  /* 오답노트 표: 날짜 열을 숨김 */
+  #wrong-table {
+    min-width: 0;
+  }
+
+  #wrong-table th:nth-child(4),
+  #wrong-table td:nth-child(4) {
+    display: none;
+  }
+
   /* 퀴즈: 보기를 1열로, 단어 글자를 조금 작게 */
   .options {
     grid-template-columns: minmax(0, 1fr);
