@@ -16,6 +16,10 @@
     grid-row: auto;
     grid-column: span 2;
   }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 1024px) {
@@ -159,6 +163,30 @@
 
   .setting-label {
     width: 100%;
+  }
+
+  /* 통계: 그래프와 기록을 1열로, 주간 기록은 요약이 위, 막대가 아래 */
+  .two-col,
+  .week-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .week-summary {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .week-chart {
+    gap: 6px;
+  }
+
+  .day-track {
+    height: 110px;
+  }
+
+  .day-value {
+    font-size: 11px;
   }
 
   .toast {
