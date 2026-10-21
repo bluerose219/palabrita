@@ -22,6 +22,9 @@ const App = {
 
     Vocabulary.init();
     Quiz.init();
+    WrongAnswers.init();
+    Stats.init();
+    Stats.timer.start();
     App.setupSearch();
     App.setupHomeLinks();
     App.setupModals();
@@ -41,6 +44,7 @@ const App = {
 
   showView(view) {
     App.currentView = view;
+    Stats.timer.setView(view);
     App.closeModal(false);
     if (Vocabulary.isAbbrOpen()) {
       Vocabulary.setAbbrOpen(false, false);
@@ -71,6 +75,10 @@ const App = {
       }
     } else if (view === "quiz") {
       Quiz.render();
+    } else if (view === "wrong") {
+      WrongAnswers.render();
+    } else if (view === "stats") {
+      Stats.render();
     }
   },
 

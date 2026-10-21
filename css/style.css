@@ -383,7 +383,12 @@ a {
   border-radius: 6px;
 }
 
+/* 내용이 없을 때 보여 주는 안내 카드 */
 .placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   padding: 40px 20px;
   text-align: center;
 }
@@ -1196,6 +1201,235 @@ select,
 .es-word {
   font-weight: 600;
   color: var(--primary);
+}
+
+/* ---------- 오답노트 ---------- */
+
+.word-table td.num,
+.num {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.word-table td.is-wrong {
+  color: var(--wrong);
+}
+
+#wrong-table {
+  min-width: 560px;
+}
+
+.link-btn {
+  padding: 4px 8px;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--text-sub);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+}
+
+.link-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: var(--text-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.history-list li:last-child {
+  border-bottom: 0;
+}
+
+/* ---------- 학습 통계 ---------- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+/* 주간 학습 기록 */
+.week-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.week-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.week-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+}
+
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.week-body {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: end;
+  gap: 24px;
+}
+
+.week-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sum-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sum-item .stat-value {
+  font-size: 26px;
+}
+
+.sum-item small {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+.day-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.day-dots i {
+  width: 10px;
+  height: 10px;
+  background: rgba(123, 108, 217, 0.15);
+  border-radius: 50%;
+}
+
+.day-dots i.on {
+  background: var(--primary);
+}
+
+.day-dots i.future {
+  background: transparent;
+  border: 1px dashed rgba(123, 108, 217, 0.35);
+}
+
+.week-chart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.day-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.day-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.day-date {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 40px;
+  height: 140px;
+  overflow: hidden;
+  background: rgba(123, 108, 217, 0.08);
+  border-radius: 12px;
+}
+
+.day-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #b3a8f3, var(--primary));
+  border-radius: 12px;
+}
+
+.day-value {
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-col.today .day-name {
+  color: var(--sky-text);
+}
+
+.day-col.today .day-fill {
+  background: linear-gradient(180deg, #a9d6f3, #6aa9d8);
+}
+
+.day-col.future .day-track {
+  background: transparent;
+  border: 1px dashed rgba(123, 108, 217, 0.25);
+}
+
+.week-note {
+  font-size: var(--text-xs);
 }
 
 /* 움직임을 줄이도록 설정한 사용자에게는 전환 효과를 끕니다 */
