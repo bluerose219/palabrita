@@ -1,11 +1,12 @@
 // 기본 단어 데이터(data/words.json) 검증
 // 실행: node tests/validate-words.js
+// 다른 파일 검사: node tests/validate-words.js 파일경로 (검증 코드 자체를 시험할 때 사용)
 // 하나라도 실패하면 오류 내용을 출력하고 종료 코드 1로 끝납니다.
 
 const fs = require("fs");
 const path = require("path");
 
-const WORDS_FILE = path.join(__dirname, "..", "data", "words.json");
+const WORDS_FILE = process.argv[2] || path.join(__dirname, "..", "data", "words.json");
 
 // 카테고리 키와 목표 개수 (data/README.md와 같아야 함)
 const CATEGORY_COUNTS = {
