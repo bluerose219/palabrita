@@ -42,7 +42,7 @@
 |---|---|---|
 | 1 | greetings(40), people(50) | 완료 |
 | 2 | food(70), nature(50) | 완료 |
-| 3 | home(60), school(50) | 예정 |
+| 3 | home(60), school(50) | 완료 |
 | 4 | numbers(60), emotions(40) | 예정 |
 | 5 | verbs(50), adjectives(30) | 예정 |
 
