@@ -147,10 +147,76 @@
         </div>
       </section>
 
-      <!-- 퀴즈 (5단계) -->
+      <!-- 퀴즈 -->
       <section class="view" data-section="quiz" hidden>
         <h2 class="section-title">퀴즈</h2>
-        <div class="card placeholder"><p class="muted">퀴즈는 5단계에서 구현합니다.</p></div>
+
+        <!-- 설정 -->
+        <div class="card quiz-panel" id="quiz-setup">
+          <p class="muted">스페인어 단어를 보고 한국어 뜻을 맞혀 보세요.</p>
+          <div class="setting">
+            <span class="setting-label" id="mode-label">문제 유형</span>
+            <div class="segmented" role="group" aria-labelledby="mode-label">
+              <button type="button" data-quiz-mode="choice" aria-pressed="true">객관식 4지선다</button>
+              <button type="button" data-quiz-mode="write" aria-pressed="false">주관식</button>
+            </div>
+          </div>
+          <div class="setting">
+            <span class="setting-label" id="count-label">문제 수</span>
+            <div class="segmented" role="group" aria-labelledby="count-label">
+              <button type="button" data-quiz-count="10" aria-pressed="true">10문제</button>
+              <button type="button" data-quiz-count="20" aria-pressed="false">20문제</button>
+              <button type="button" data-quiz-count="30" aria-pressed="false">30문제</button>
+            </div>
+          </div>
+          <label class="setting">
+            <span class="setting-label">출제 범위</span>
+            <select id="quiz-scope"></select>
+          </label>
+          <p class="muted" id="quiz-available"></p>
+          <p class="form-message" id="quiz-setup-message" role="status" hidden></p>
+          <div>
+            <button class="btn btn-primary" type="button" id="quiz-start">퀴즈 시작</button>
+          </div>
+        </div>
+
+        <!-- 문제 -->
+        <div class="quiz-wrap" id="quiz-play" hidden>
+          <div class="quiz-head">
+            <span class="chip" id="quiz-mode-label">객관식</span>
+            <span class="muted" id="quiz-progress-text"></span>
+          </div>
+          <p class="muted quiz-notice" id="quiz-notice" hidden></p>
+          <div class="progress"><i id="quiz-progress-bar"></i></div>
+          <div class="card quiz-word">
+            <span class="eyebrow">이 단어의 뜻은?</span>
+            <p class="quiz-spanish" id="quiz-word" lang="es"></p>
+          </div>
+          <div class="options" id="quiz-options"></div>
+          <form class="answer-input" id="quiz-write-form" hidden>
+            <input id="quiz-answer" type="text" autocomplete="off" placeholder="한국어 뜻을 입력하세요" aria-label="한국어 뜻">
+            <button class="btn btn-primary" type="submit">제출</button>
+          </form>
+          <div class="feedback" id="quiz-feedback" role="status" hidden></div>
+          <div class="quiz-actions">
+            <button class="btn" type="button" id="quiz-quit">그만두기</button>
+            <button class="btn btn-primary" type="button" id="quiz-next" hidden>다음 문제</button>
+          </div>
+        </div>
+
+        <!-- 결과 -->
+        <div class="card quiz-panel quiz-result" id="quiz-result" hidden>
+          <span class="eyebrow" id="result-title">퀴즈 결과</span>
+          <p class="result-score"><span id="result-score">0</span><small> / <span id="result-total">0</span></small></p>
+          <p class="result-accuracy" id="result-accuracy"></p>
+          <p class="muted" id="result-review-note" hidden></p>
+          <div id="result-wrong-list"></div>
+          <div class="dialog-actions">
+            <button class="btn" type="button" id="result-setup">설정으로</button>
+            <a class="btn" href="#wrong">오답노트 보기</a>
+            <button class="btn btn-primary" type="button" id="result-retry">다시 풀기</button>
+          </div>
+        </div>
       </section>
 
       <!-- 오답노트 (6단계) -->

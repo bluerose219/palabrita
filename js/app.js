@@ -21,6 +21,7 @@ const App = {
     }
 
     Vocabulary.init();
+    Quiz.init();
     App.setupSearch();
     App.setupHomeLinks();
     App.setupModals();
@@ -68,6 +69,8 @@ const App = {
         App.openFormAfterMove = false;
         Vocabulary.openForm(null);
       }
+    } else if (view === "quiz") {
+      Quiz.render();
     }
   },
 
