@@ -1,0 +1,20 @@
+# 운영체제
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 편집기
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Claude 개인 설정 (스킬은 공유)
+.claude/settings.local.json
+
+# 임시 파일
+*.tmp
+*.log
