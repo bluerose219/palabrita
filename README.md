@@ -68,6 +68,7 @@ node tests/validate-words.js
 palabrita/
 ├── README.md              프로젝트 소개
 ├── AGENTS.md              개발 규칙
+├── CLAUDE.md              Claude Code가 자동으로 읽는 안내
 ├── .gitignore
 ├── .nojekyll              GitHub Pages의 Jekyll 처리 끄기
 ├── index.html             단일 페이지
@@ -96,6 +97,7 @@ palabrita/
 ## 문서
 
 - [개발 규칙](AGENTS.md)
+- [Claude Code 안내](CLAUDE.md)
 - [요구사항](docs/requirements.md)
 - [설계](docs/design.md)
 - [작업 계획](docs/tasks.md)
