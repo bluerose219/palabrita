@@ -49,7 +49,7 @@ Palabrita 프로젝트에서 작업하는 사람과 AI 에이전트가 따라야
 | `css/style.css` | CSS 변수, 공통 컴포넌트, 화면별 스타일 |
 | `css/responsive.css` | 1024px, 768px 기준 반응형 스타일 |
 | `js/storage.js` | localStorage 읽기와 쓰기. 다른 파일은 localStorage를 직접 쓰지 않음 |
-| `js/vocabulary.js` | 단어 데이터 로드, 기본/사용자 단어 병합, 검색과 필터, 사용자 단어 등록/수정/삭제, 품사 약어 공통 함수, 단어장 화면 |
+| `js/vocabulary.js` | 단어 데이터 로드, 기본/사용자 단어 병합, 검색과 필터(여러 카테고리), 페이지 나누기, 외운 단어 체크, 동사 현재시제, 사용자 단어 등록/수정/삭제, 품사 약어 공통 함수, 단어장 화면 |
 | `js/quiz.js` | 객관식/주관식 퀴즈 출제, 채점, 결과 화면 |
 | `js/wrong-answers.js` | 오답 기록, 오답 목록, 오답 재시험 |
 | `js/stats.js` | 학습 통계 계산과 화면, 주간 학습 기록, 자동 학습 시간 측정 |
@@ -70,6 +70,7 @@ Palabrita 프로젝트에서 작업하는 사람과 AI 에이전트가 따라야
 | `palabrita.wrongAnswers` | 오답 기록 |
 | `palabrita.stats` | 퀴즈 통계와 기록 |
 | `palabrita.vocabView` | 단어장 가리기 설정 |
+| `palabrita.memorized` | 외운 단어로 체크한 단어와 체크한 날짜 |
 | `palabrita.studyTime` | 날짜별 학습 시간(초) |
 | `palabrita.studyTimerOwner` | 여러 탭 중 학습 시간을 측정하는 탭 정보 |
 
