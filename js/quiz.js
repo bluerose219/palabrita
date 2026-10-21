@@ -8,7 +8,8 @@ const REVIEW_MAX = 30; // 오답 재시험은 한 번에 최대 30문제
 const ANSWER_ABBR_PATTERN = /^(n|v|adj|adv|pron|prep|conj|interj|etc)\.(m\.f\.|m\.|f\.|com\.|phr\.)?\s*/i;
 
 const Quiz = {
-  settings: { mode: "choice", count: 10, scope: "all" },
+  // scopes: 고른 범위(카테고리 키, 내 단어는 "user") 목록. 비어 있으면 전체
+  settings: { mode: "choice", count: 10, scopes: [] },
 
   // 진행 중인 퀴즈. 없으면 null
   // { words, index, correct, mode, review, answered, wrongWords, notice }
@@ -27,8 +28,21 @@ const Quiz = {
         Quiz.renderSetup();
       });
     }
-    document.getElementById("quiz-scope").addEventListener("change", (event) => {
-      Quiz.settings.scope = event.target.value;
+    // 출제 범위: "전체"를 누르면 모두 풀고, 나머지는 누를 때마다 켜고 끕니다.
+    document.getElementById("scope-all").addEventListener("click", () => {
+      Quiz.settings.scopes = [];
+      Quiz.renderSetup();
+    });
+    document.getElementById("quiz-scopes").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-scope]");
+      if (!button) return;
+      const scopes = Quiz.settings.scopes;
+      const index = scopes.indexOf(button.dataset.scope);
+      if (index >= 0) {
+        scopes.splice(index, 1);
+      } else {
+        scopes.push(button.dataset.scope);
+      }
       Quiz.renderSetup();
     });
     document.getElementById("quiz-start").addEventListener("click", Quiz.startFromSettings);
@@ -67,7 +81,6 @@ const Quiz = {
 
   showSetup() {
     Quiz.session = null;
-    Quiz.fillScopeSelect();
     Quiz.renderSetup();
     Quiz.showPanel("setup");
   },
@@ -78,25 +91,38 @@ const Quiz = {
     document.getElementById("quiz-result").hidden = name !== "result";
   },
 
-  fillScopeSelect() {
-    const select = document.getElementById("quiz-scope");
-    let options = '<option value="all">전체 단어</option>';
-    for (const key in CATEGORY_LABELS) {
-      options += `<option value="${key}">${CATEGORY_LABELS[key]}</option>`;
+  // 범위 버튼은 처음 한 번만 만들고, 그 뒤에는 켜짐 상태와 단어 수만 바꿉니다.
+  renderScopeChips() {
+    const container = document.getElementById("quiz-scopes");
+    if (container.children.length === 0) {
+      const labels = Object.assign({}, CATEGORY_LABELS, { user: "내 단어" });
+      let chips = "";
+      for (const key in labels) {
+        chips += `<button class="cat-chip" type="button" data-scope="${key}" aria-pressed="false"><svg class="icon chip-icon" aria-hidden="true"><use href="#c-${key}"/></svg>${labels[key]} <span class="cat-count"></span></button>`;
+      }
+      container.innerHTML = chips;
     }
-    options += '<option value="user">내 단어</option>';
-    select.innerHTML = options;
-    select.value = Quiz.settings.scope;
+
+    const scopes = Quiz.settings.scopes;
+    for (const button of container.querySelectorAll("[data-scope]")) {
+      const key = button.dataset.scope;
+      button.setAttribute("aria-pressed", String(scopes.includes(key)));
+      button.querySelector(".cat-count").textContent = Quiz.getPool([key]).length;
+    }
+    document.getElementById("scope-all").setAttribute("aria-pressed", String(scopes.length === 0));
   },
 
-  getPool(scope) {
+  // 고른 범위에 들어가는 단어. 여러 개를 고르면 합쳐서 출제합니다.
+  getPool(scopes) {
     const words = Vocabulary.getAllWords();
-    if (scope === "all") return words;
-    if (scope === "user") return words.filter((word) => word.isUser);
-    return words.filter((word) => word.category === scope);
+    if (scopes.length === 0) return words;
+    return words.filter(
+      (word) => scopes.includes(word.category) || (scopes.includes("user") && word.isUser)
+    );
   },
 
   renderSetup() {
+    Quiz.renderScopeChips();
     for (const button of document.querySelectorAll("[data-quiz-mode]")) {
       button.setAttribute("aria-pressed", String(button.dataset.quizMode === Quiz.settings.mode));
     }
@@ -104,7 +130,7 @@ const Quiz = {
       button.setAttribute("aria-pressed", String(Number(button.dataset.quizCount) === Quiz.settings.count));
     }
 
-    const pool = Quiz.getPool(Quiz.settings.scope);
+    const pool = Quiz.getPool(Quiz.settings.scopes);
     const problem = Quiz.checkCanStart(pool, Quiz.settings.mode);
     const available = document.getElementById("quiz-available");
     const message = document.getElementById("quiz-setup-message");
@@ -135,7 +161,7 @@ const Quiz = {
   },
 
   startFromSettings() {
-    const pool = Quiz.getPool(Quiz.settings.scope);
+    const pool = Quiz.getPool(Quiz.settings.scopes);
     if (Quiz.checkCanStart(pool, Quiz.settings.mode)) {
       return;
     }
@@ -340,7 +366,6 @@ const Quiz = {
     nextButton.textContent = session.index === session.words.length - 1 ? "결과 보기" : "다음 문제";
     nextButton.hidden = false;
     nextButton.focus();
-    App.updateWrongBadge();
   },
 
   // type: correct, wrong, hint

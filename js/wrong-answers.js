@@ -60,7 +60,6 @@ const WrongAnswers = {
       const button = event.target.closest("[data-remove]");
       if (button) {
         WrongAnswers.remove(button.dataset.remove);
-        App.updateWrongBadge();
         WrongAnswers.render();
         App.notify("오답노트에서 뺐습니다.");
       }

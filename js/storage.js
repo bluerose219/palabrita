@@ -113,6 +113,14 @@ const Storage = {
     return Storage.save("vocabView", view);
   },
 
+  // 외운 단어로 체크한 단어 { "w101": "2026-10-21" } (체크한 날짜)
+  getMemorized() {
+    return Storage.load("memorized", {}, isPlainObject);
+  },
+  saveMemorized(memorized) {
+    return Storage.save("memorized", memorized);
+  },
+
   // 날짜별 학습 시간(초) { "2026-10-21": 1080 }
   getStudyTime() {
     return Storage.load("studyTime", {}, isPlainObject);

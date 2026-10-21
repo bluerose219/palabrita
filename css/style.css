@@ -22,7 +22,7 @@
 
   /* 주요 색 */
   --primary: #7b6cd9;
-  --primary-light: #8d7ee6;
+  --primary-strong: #6b5bcf; /* 진한 보라: 강조 버튼에 마우스를 올렸을 때 */
   --primary-soft: #e9e4fd;
   --sky: #8cc4ea;
   --sky-soft: #e2f1fb;
@@ -49,8 +49,6 @@
   --radius-sm: 14px;
   --radius-pill: 999px;
   --shadow: 0 10px 30px rgba(110, 96, 190, 0.12);
-  --shadow-card: 0 6px 20px rgba(110, 96, 190, 0.07);
-  --shadow-hover: 0 6px 16px rgba(110, 96, 190, 0.15);
 
   color-scheme: light;
 }
@@ -92,18 +90,15 @@ a {
   color: inherit;
 }
 
-/* 배경의 흐린 원 장식 */
-.blob {
-  position: fixed;
-  z-index: 0;
-  border-radius: 50%;
-  filter: blur(60px);
-  pointer-events: none;
+/* 화면에는 보이지 않고 화면 읽기 프로그램만 읽는 글자 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
-
-.blob-a { width: 340px; height: 340px; top: -80px; left: 8%; background: #d9cdfb; }
-.blob-b { width: 300px; height: 300px; bottom: -60px; right: 6%; background: #c9e5f7; }
-.blob-c { width: 220px; height: 220px; top: 40%; left: 45%; background: #f6dcea; opacity: 0.6; }
 
 /* ---------- 앱 프레임 ---------- */
 
@@ -165,7 +160,6 @@ a {
   background: var(--glass-strong);
   color: var(--primary);
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(123, 108, 217, 0.12);
 }
 
 .nav-sep {
@@ -248,18 +242,28 @@ a {
   outline: none;
 }
 
-.badge-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--wrong);
-  text-decoration: none;
+/* 상단 바의 둥근 아이콘 버튼 (약어 설명) */
+.round-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--primary);
+  cursor: pointer;
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
+  transition: background-color 0.15s;
+}
+
+.round-btn:hover,
+.round-btn[aria-expanded="true"] {
+  background: #ffffff;
+}
+
+.round-btn .icon {
+  width: 20px;
+  height: 20px;
 }
 
 .view {
@@ -276,7 +280,6 @@ a {
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
   backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur);
 }
@@ -306,8 +309,7 @@ a {
 
 .eyebrow {
   font-size: var(--text-xs);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--text-sub);
 }
 
@@ -326,25 +328,27 @@ a {
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: background-color 0.15s, color 0.15s;
 }
 
+/* 마우스를 올리면 배경만 살짝 진해집니다 (떠오르거나 커지는 효과 없음) */
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-hover);
+  background: #ffffff;
 }
 
 .btn:disabled {
   opacity: 0.45;
   cursor: default;
-  transform: none;
-  box-shadow: none;
 }
 
 .btn-primary {
   color: #ffffff;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  background: var(--primary);
   border-color: transparent;
+}
+
+.btn-primary:hover {
+  background: var(--primary-strong);
 }
 
 .btn-small {
@@ -379,7 +383,7 @@ a {
 .progress > i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #a99cf0, var(--primary));
+  background: var(--primary);
   border-radius: 6px;
 }
 
@@ -457,48 +461,113 @@ select:focus-visible {
 
 /* ---------- 홈 ---------- */
 
-.home-top {
+/* 오늘의 학습 3단계 */
+.steps {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr);
-  grid-template-rows: auto auto;
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  overflow: hidden;
 }
 
-.chart-card {
-  grid-row: span 2;
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  color: var(--text);
+  text-decoration: none;
+  border-right: 1px solid var(--glass-border);
+  transition: background-color 0.15s;
 }
 
-.today-card {
-  position: relative;
+.step:last-child {
+  border-right: 0;
+}
+
+.step:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.step b {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.step-sub {
+  display: block;
+  font-size: var(--text-xs);
+}
+
+.step-num {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 50%;
+}
+
+.step.is-done .step-num {
+  color: #ffffff;
+  background: var(--primary);
+}
+
+/* 오늘의 단어(왼쪽, 크게)와 핵심 숫자 4개(오른쪽) */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  padding: 0;
+  overflow: hidden;
+}
+
+.hero-word {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  grid-row: span 2;
-  overflow: hidden;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.75), rgba(233, 228, 253, 0.65));
+  gap: 8px;
+  padding: 24px 28px;
+  background: rgba(255, 255, 255, 0.45);
 }
 
-/* 오늘의 단어 카드 오른쪽 아래의 둥근 장식 */
-.today-card::after {
-  content: "";
-  position: absolute;
-  right: -40px;
-  bottom: -50px;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cfc4fa 45%, #9fd2f2 100%);
-  opacity: 0.8;
-}
-
-.today-word {
-  font-size: var(--text-xl);
-  font-weight: 700;
+.hero-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
   color: var(--primary);
 }
 
-.today-mean {
+.hero-es {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--primary);
+  overflow-wrap: anywhere;
+}
+
+.hero-mean {
   font-size: var(--text-md);
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 16px 20px;
+  padding: 20px 24px;
+  border-left: 1px solid var(--glass-border);
+}
+
+.hero-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-stats .stat-value {
+  font-size: 26px;
 }
 
 .meta-row {
@@ -507,83 +576,88 @@ select:focus-visible {
   gap: 6px;
 }
 
-.today-actions {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-}
-
-/* 카테고리 카드 */
-.cat-grid {
+/* 카테고리별 학습: 카드 하나 안의 아이콘 목록. 줄 전체를 누르면 그 카테고리 단어장으로 갑니다. */
+.cat-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.cat-card {
-  display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 0 28px;
+  margin: 0;
   padding: 0;
-  overflow: hidden;
+  list-style: none;
 }
 
-.cat-thumb {
-  min-height: 120px;
+.cat-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 110px 38px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 2px;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(123, 108, 217, 0.1);
+  border-radius: 0;
 }
 
-.cat-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px 18px;
+.cat-row:hover .cat-name {
+  color: var(--primary);
+}
+
+.cat-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 11px;
+}
+
+.cat-row .progress > i {
+  background: var(--primary);
 }
 
 .cat-name {
-  font-size: var(--text-md);
+  font-size: 14px;
   font-weight: 600;
 }
 
-.cat-body .btn {
-  align-self: flex-start;
-}
-
-.progress-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.cat-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--text-sub);
 }
 
 .progress-num {
-  width: 34px;
   font-size: var(--text-xs);
   text-align: right;
   color: var(--text-sub);
   font-variant-numeric: tabular-nums;
 }
 
-/* 카테고리 카드 그림 자리: 3D 일러스트 대신 그라데이션 원 */
-.thumb-user       { background: radial-gradient(circle at 35% 35%, #fff6f9 0%, #f6c3d3 45%, var(--user) 100%); }
-.thumb-greetings  { background: radial-gradient(circle at 30% 30%, #ffffff 0%, #c9bdf9 40%, #8fcdf0 100%); }
-.thumb-people     { background: radial-gradient(circle at 60% 35%, #ffffff 0%, #d7cdfb 45%, #b6d8f5 100%); }
-.thumb-food       { background: radial-gradient(circle at 70% 30%, #fff4f8 0%, #f5c9d9 40%, #c4b3f5 100%); }
-.thumb-nature     { background: radial-gradient(circle at 40% 60%, #ffffff 0%, #bfe6f3 45%, #a8b8f5 100%); }
-.thumb-home       { background: radial-gradient(circle at 50% 40%, #ffffff 0%, #e2d6fb 45%, #c7c0f6 100%); }
-.thumb-school     { background: radial-gradient(circle at 35% 55%, #ffffff 0%, #cde7f7 45%, #9fb6f2 100%); }
-.thumb-numbers    { background: radial-gradient(circle at 60% 40%, #fffaf0 0%, #f8dcc8 40%, #d6c3f6 100%); }
-.thumb-emotions   { background: radial-gradient(circle at 30% 40%, #fff7fb 0%, #f3cde3 45%, #b9c3f5 100%); }
-.thumb-verbs      { background: radial-gradient(circle at 65% 60%, #ffffff 0%, #c7d0fa 45%, #9cc9ee 100%); }
-.thumb-adjectives { background: radial-gradient(circle at 45% 35%, #ffffff 0%, #e8d3f8 45%, #f0bfd2 100%); }
-
-.cat-card.is-user .progress > i {
-  background: linear-gradient(90deg, #f3b3c6, var(--user));
+/* "내 단어"는 목록 맨 위 한 줄 전체 */
+.cat-list .is-user {
+  grid-column: 1 / -1;
 }
 
-/* "내 단어" 카드는 한 줄 전체를 씁니다 */
-.cat-card.is-wide {
-  grid-column: 1 / -1;
+.cat-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 2px;
+  border-bottom: 1px solid rgba(123, 108, 217, 0.1);
+}
+
+.cat-empty .cat-name {
+  flex: 1;
 }
 
 /* ---------- 불러오기 오류, 알림 ---------- */
@@ -642,6 +716,89 @@ select,
   background: var(--glass-strong);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
+}
+
+/* 카테고리 여러 개 고르기 */
+.cat-filter {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cat-filter-label {
+  flex: none;
+  padding-top: 7px;
+  font-size: var(--text-sm);
+  color: var(--text-sub);
+}
+
+.cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 카테고리 버튼 바닥의 얇은 막대가 외운 비율(--memo)만큼 채워집니다 */
+.cat-chip {
+  --memo: 0%;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  color: var(--text-sub);
+  cursor: pointer;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+}
+
+.cat-chip:hover {
+  color: var(--text);
+}
+
+#vocab-cats .cat-chip::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--memo);
+  height: 3px;
+  background: var(--primary);
+}
+
+.cat-chip[aria-pressed="true"] {
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-color: #d6cdfa;
+}
+
+/* "전체"는 다른 카테고리와 구분되도록 켜졌을 때 진한 보라색 */
+.cat-chip-all {
+  flex: none;
+}
+
+.cat-chip-all[aria-pressed="true"] {
+  color: #ffffff;
+  background: var(--primary);
+  border-color: transparent;
+}
+
+.cat-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.cat-chip[aria-pressed="true"] .cat-count {
+  color: var(--primary);
 }
 
 .toggle {
@@ -736,10 +893,95 @@ select,
   table-layout: fixed;
 }
 
-#vocab-table .col-es { width: 32%; }
-#vocab-table .col-ko { width: 36%; }
+#vocab-table .col-num { width: 56px; }
+#vocab-table .col-es { width: 26%; }
+#vocab-table .col-ko { width: 30%; }
+
+/* 단어 번호: 작고 연한 숫자 */
+.word-table td.row-num {
+  font-size: var(--text-xs);
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
 #vocab-table .col-level { width: 76px; }
 #vocab-table .col-type { width: 60px; }
+#vocab-table .col-memo { width: 84px; }
+
+/* 외운 단어 칸: 체크 상자를 가운데에 */
+.word-table .memo-head,
+.word-table td.memo-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 체크 상자: 브라우저 기본 모양 대신 둥근 네모와 CSS로 그린 체크 표시 */
+.memo-check {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  background: var(--glass-strong);
+  border: 1.5px solid #c9c0f3;
+  border-radius: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.memo-check:hover {
+  border-color: var(--primary);
+}
+
+.memo-check:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.memo-check:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.memo-check:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* 외운 단어 줄은 흐리게 */
+#vocab-body tr.is-memorized td {
+  opacity: 0.5;
+}
+
+#vocab-body tr.is-memorized td.memo-cell {
+  opacity: 1;
+}
+
+/* 외운 단어 요약 막대 */
+.memo-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.memo-summary-text {
+  flex: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.memo-summary .progress {
+  max-width: 320px;
+}
 
 .word-table td.es,
 .word-table td.ko {
@@ -763,6 +1005,130 @@ select,
 #vocab-body tr[data-id]:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: -2px;
+}
+
+/* 단어장 페이지 이동: 테두리 없는 숫자와 밑줄(시안 C) + 알약 모양 선택 상자(시안 A) */
+.pager {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(123, 108, 217, 0.12);
+}
+
+.pager-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pager-nums {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pager-num {
+  position: relative;
+  min-width: 30px;
+  padding: 6px 4px 8px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-sub);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.pager-num:hover:not([aria-current]) {
+  color: var(--text);
+}
+
+.pager-num[aria-current] {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* 지금 페이지 밑줄 */
+.pager-num[aria-current]::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: 0;
+  left: 6px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.pager-gap {
+  padding: 0 4px;
+  color: var(--text-sub);
+}
+
+/* "이전", "다음" 글자 버튼 */
+.pager-text {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.pager-text .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.pager-text:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pager-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pager-info {
+  font-size: var(--text-xs);
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 알약 모양 선택 상자. 기본 화살표 대신 CSS로 그린 꺾쇠를 씁니다. */
+select.pager-select {
+  padding: 7px 32px 7px 14px;
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+  background-color: var(--glass-strong);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-sub) 50%),
+    linear-gradient(135deg, var(--text-sub) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 52%, calc(100% - 12px) 52%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  appearance: none;
+  -webkit-appearance: none;
+  font-variant-numeric: tabular-nums;
 }
 
 .empty-row td {
@@ -810,7 +1176,7 @@ select,
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 16px 40px rgba(110, 96, 190, 0.2);
+  box-shadow: 0 8px 24px rgba(110, 96, 190, 0.14);
   backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur);
 }
@@ -916,6 +1282,60 @@ select,
   font-size: 14px;
 }
 
+/* 동사 현재시제 변화표 */
+.conj {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: rgba(233, 228, 253, 0.45);
+  border-radius: var(--radius-sm);
+}
+
+.conj-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+/* 세로로 3칸씩 채워 왼쪽 열은 단수(yo, tú, él), 오른쪽 열은 복수(nosotros, vosotros, ellos) */
+.conj-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  gap: 6px 16px;
+  margin: 0;
+}
+
+.conj-cell {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(123, 108, 217, 0.12);
+}
+
+.conj-cell dt {
+  font-size: var(--text-xs);
+  color: var(--text-sub);
+}
+
+.conj-cell dd {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--primary);
+  text-align: right;
+}
+
+.conj-note {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-sub);
+}
+
 .dialog-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1009,6 +1429,26 @@ select,
   font-weight: 600;
 }
 
+/* 출제 범위처럼 여러 줄이 되는 설정은 제목을 위에 맞춥니다 */
+.setting-top {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.setting-top .setting-label {
+  flex: none;
+  padding-top: 7px;
+}
+
+.scope-chips {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+
 /* 여러 개 중 하나를 고르는 버튼 묶음 */
 .segmented {
   display: inline-flex;
@@ -1034,7 +1474,6 @@ select,
   font-weight: 600;
   color: var(--primary);
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(110, 96, 190, 0.12);
 }
 
 .quiz-wrap {
@@ -1404,7 +1843,7 @@ select,
 
 .day-fill {
   width: 100%;
-  background: linear-gradient(180deg, #b3a8f3, var(--primary));
+  background: var(--primary);
   border-radius: 12px;
 }
 
@@ -1420,7 +1859,7 @@ select,
 }
 
 .day-col.today .day-fill {
-  background: linear-gradient(180deg, #a9d6f3, #6aa9d8);
+  background: #6aa9d8;
 }
 
 .day-col.future .day-track {
@@ -1437,4 +1876,11 @@ select,
   * {
     transition: none !important;
   }
+}
+
+/* 카테고리 버튼 안의 작은 아이콘 (홈 목록과 같은 아이콘, 보라색) */
+.cat-chip .chip-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--primary);
 }

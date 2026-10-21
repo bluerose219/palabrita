@@ -31,6 +31,8 @@ const App = {
 
     window.addEventListener("hashchange", () => App.showView(App.getViewFromHash()));
     App.showView(App.getViewFromHash());
+    // 학습 중에도 상단의 오늘 학습 시간이 바뀌도록 30초마다 갱신합니다.
+    setInterval(App.updateTodayStatus, 30000);
   },
 
   // 주소의 해시에서 화면 이름을 꺼냅니다. 모르는 이름이면 홈으로 갑니다.
@@ -64,7 +66,7 @@ const App = {
       }
     }
 
-    App.updateWrongBadge();
+    App.updateTodayStatus();
     if (view === "home") {
       App.renderHome();
     } else if (view === "vocabulary") {
@@ -84,8 +86,9 @@ const App = {
 
   // 다른 화면에서 단어장을 특정 필터로 엽니다.
   goToVocabulary(filters) {
-    Vocabulary.filters = Object.assign({ category: "all", level: "all", source: "all", query: Vocabulary.filters.query }, filters);
+    Vocabulary.filters = Object.assign({ categories: [], level: "all", source: "all", query: Vocabulary.filters.query }, filters);
     Vocabulary.shuffledIds = null;
+    Vocabulary.page = 1;
     if (location.hash === "#vocabulary") {
       Vocabulary.render();
     } else {
@@ -99,6 +102,7 @@ const App = {
     input.addEventListener("input", () => {
       Vocabulary.filters.query = input.value;
       Vocabulary.shuffledIds = null;
+      Vocabulary.page = 1;
       if (App.currentView === "vocabulary") {
         Vocabulary.render();
       }
@@ -108,10 +112,6 @@ const App = {
         location.hash = "#vocabulary";
       }
     });
-  },
-
-  updateWrongBadge() {
-    document.getElementById("wrong-badge-count").textContent = Stats.getSummary().wrongCount;
   },
 
   // ---------- 홈 ----------
@@ -133,7 +133,7 @@ const App = {
       } else if (target === "all") {
         App.goToVocabulary({});
       } else {
-        App.goToVocabulary({ category: target });
+        App.goToVocabulary({ categories: [target] });
       }
     });
   },
@@ -145,11 +145,42 @@ const App = {
     document.getElementById("home-accuracy").textContent = summary.accuracy + "%";
     document.getElementById("home-wrong").textContent = summary.wrongCount;
 
-    const recent = Stats.getRecentAccuracy(7);
-    Stats.drawAccuracyChart("home-chart", recent.labels, recent.values);
-
+    App.renderSteps(summary);
     App.renderTodayWord();
     App.renderCategoryCards(new Set(summary.learnedIds));
+  },
+
+  // 오늘의 학습 3단계. 끝낸 단계는 is-done이 붙어 번호가 보라색으로 채워집니다.
+  // 단어 보기: 오늘 학습 시간 1분 이상 / 퀴즈 풀기: 오늘 퀴즈 1회 이상 / 오답 복습: 오늘 재시험 1회 이상이거나 오답 없음
+  renderSteps(summary) {
+    const today = Stats.kstDateKey(Date.now());
+    const seconds = Stats.timer.getAll()[today] || 0;
+    const todayQuizzes = summary.history.filter((item) => item.date === today && !item.review);
+    const todayReviews = summary.history.filter((item) => item.date === today && item.review);
+
+    const quizTotal = todayQuizzes.reduce((sum, item) => sum + item.total, 0);
+    const quizCorrect = todayQuizzes.reduce((sum, item) => sum + item.correct, 0);
+
+    App.setStep("step-vocab", seconds >= 60, `오늘 ${Stats.formatDuration(seconds)} 학습`);
+    App.setStep(
+      "step-quiz",
+      todayQuizzes.length > 0,
+      todayQuizzes.length > 0 ? `오늘 ${todayQuizzes.length}회 · ${quizTotal}문제 중 ${quizCorrect}개 정답` : "아직 풀지 않았어요"
+    );
+    let wrongText = "복습할 오답이 없어요";
+    if (todayReviews.length > 0) {
+      wrongText = `오늘 ${todayReviews.length}회 복습 · 남은 오답 ${summary.wrongCount}개`;
+    } else if (summary.wrongCount > 0) {
+      wrongText = `오답 ${summary.wrongCount}개가 기다려요`;
+    }
+    App.setStep("step-wrong", todayReviews.length > 0 || summary.wrongCount === 0, wrongText);
+  },
+
+  setStep(id, done, text) {
+    const step = document.getElementById(id);
+    step.classList.toggle("is-done", done);
+    step.querySelector(".step-sub").textContent = text;
+    step.querySelector(".step-num").setAttribute("aria-label", done ? "완료" : "아직 안 함");
   },
 
   // 오늘의 단어: 한국 날짜를 숫자로 바꿔 기본 단어 중 하나를 고릅니다. 하루 동안 같은 단어가 나옵니다.
@@ -175,49 +206,51 @@ const App = {
       `<span class="chip chip-sky">${word.level}</span>`;
   },
 
-  // 첫 카드는 "내 단어"(한 줄 전체), 그 아래 카테고리 10개
+  // 카드 하나 안의 목록. 맨 위는 "내 단어", 그 아래 카테고리 10개
+  // 줄을 누르면 그 카테고리 단어장으로 갑니다.
   renderCategoryCards(learnedSet) {
     const allWords = Vocabulary.getAllWords();
-    const cards = [];
+    const rows = [];
 
     const userWords = Vocabulary.userWords;
     if (userWords.length === 0) {
-      cards.push(`
-        <div class="card cat-card is-user is-wide">
-          <div class="cat-thumb thumb-user"></div>
-          <div class="cat-body">
-            <p class="cat-name">내 단어</p>
-            <span class="muted">아직 추가한 단어가 없어요. 외우고 싶은 단어를 직접 추가해 보세요.</span>
-            <button class="btn btn-small" type="button" data-add-word>단어 추가하기 <svg class="icon"><use href="#i-plus"/></svg></button>
-          </div>
-        </div>`);
+      rows.push(`
+        <li class="cat-empty is-user">
+          <span class="cat-icon"><svg class="icon"><use href="#c-user"/></svg></span>
+          <span class="cat-name">내 단어<span class="cat-sub">아직 추가한 단어가 없어요.</span></span>
+          <button class="btn btn-small" type="button" data-add-word><svg class="icon"><use href="#i-plus"/></svg>단어 추가</button>
+        </li>`);
     } else {
-      cards.push(App.categoryCardHtml("user", "내 단어", userWords, learnedSet, "is-user is-wide", " · 직접 추가한 단어"));
+      rows.push(App.categoryRowHtml("user", "내 단어", userWords, learnedSet, "is-user"));
     }
 
     for (const key in CATEGORY_LABELS) {
       const words = allWords.filter((word) => word.category === key);
-      cards.push(App.categoryCardHtml(key, CATEGORY_LABELS[key], words, learnedSet, "", ""));
+      rows.push(App.categoryRowHtml(key, CATEGORY_LABELS[key], words, learnedSet, ""));
     }
-    document.getElementById("cat-grid").innerHTML = cards.join("");
+    document.getElementById("cat-grid").innerHTML = rows.join("");
   },
 
-  categoryCardHtml(key, name, words, learnedSet, extraClass, extraText) {
+  // 진행 막대는 퀴즈에서 맞힌 단어(학습한 단어)의 비율입니다.
+  categoryRowHtml(key, name, words, learnedSet, extraClass) {
     const learned = words.filter((word) => learnedSet.has(word.id)).length;
+    const memorized = Vocabulary.countMemorized(words);
     const progress = words.length > 0 ? Math.round((learned / words.length) * 100) : 0;
     return `
-      <div class="card cat-card ${extraClass}">
-        <div class="cat-thumb thumb-${key}"></div>
-        <div class="cat-body">
-          <p class="cat-name">${name}</p>
-          <span class="muted">${words.length}단어${extraText} · 학습 ${learned}개</span>
-          <div class="progress-row">
-            <div class="progress" role="progressbar" aria-label="${name} 학습 진행률" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"><i style="width:${progress}%"></i></div>
-            <span class="progress-num">${progress}%</span>
-          </div>
-          <button class="btn btn-small" type="button" data-go-vocab="${key}">학습하기 <svg class="icon"><use href="#i-arrow"/></svg></button>
-        </div>
-      </div>`;
+      <li class="${extraClass}">
+        <button class="cat-row" type="button" data-go-vocab="${key}">
+          <span class="cat-icon"><svg class="icon"><use href="#c-${key}"/></svg></span>
+          <span class="cat-name">${name}<span class="cat-sub">${words.length}단어 · 학습 ${learned} · 외움 ${memorized}</span></span>
+          <span class="progress" role="progressbar" aria-label="${name} 학습 진행률" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"><i style="width:${progress}%"></i></span>
+          <span class="progress-num">${progress}%</span>
+        </button>
+      </li>`;
+  },
+
+  // 상단 바의 "오늘 학습 12분" (자동 측정한 오늘 학습 시간)
+  updateTodayStatus() {
+    const seconds = Stats.timer.getAll()[Stats.kstDateKey(Date.now())] || 0;
+    document.getElementById("today-status").textContent = "오늘 학습 " + Stats.formatDuration(seconds);
   },
 
   // ---------- 공통 창(모달) ----------

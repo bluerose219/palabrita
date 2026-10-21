@@ -26,11 +26,19 @@
     <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></symbol>
+    <!-- 카테고리 아이콘 (라인 스타일) -->
+    <symbol id="c-user" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+    <symbol id="c-greetings" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+    <symbol id="c-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.3c2.4-.3 4.4 1.2 5 4.2"/></symbol>
+    <symbol id="c-food" viewBox="0 0 24 24"><path d="M5 10h12v3a6 6 0 0 1-12 0z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c0 1.5 1 1.5 1 3M12 3.5c0 1.5 1 1.5 1 3"/></symbol>
+    <symbol id="c-nature" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19 13 11"/></symbol>
+    <symbol id="c-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/><rect x="10" y="14" width="4" height="6"/></symbol>
+    <symbol id="c-school" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3.5 2.5 8.5 2.5 12 0v-5"/><path d="M22 9v6"/></symbol>
+    <symbol id="c-numbers" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="c-emotions" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+    <symbol id="c-verbs" viewBox="0 0 24 24"><path d="M4 12h12"/><path d="m12 6 6 6-6 6"/><path d="M20 5v14"/></symbol>
+    <symbol id="c-adjectives" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8" r="1.4"/></symbol>
   </svg>
-
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
-  <div class="blob blob-c"></div>
 
   <div class="app">
     <nav class="sidebar" aria-label="주 메뉴">
@@ -46,45 +54,74 @@
 
     <main class="main">
       <header class="topbar">
-        <h1 class="greeting">¡Hola! 오늘도 한 단어씩<small>천천히, 매일 조금씩 익혀 봐요</small></h1>
+        <h1 class="sr-only">Palabrita 스페인어 단어 학습</h1>
+        <p class="greeting">¡Hola!<small id="today-status">오늘 학습 0분</small></p>
         <label class="search">
           <svg class="icon"><use href="#i-search"/></svg>
           <input id="top-search" type="search" placeholder="스페인어 또는 한국어로 검색" aria-label="단어 검색">
         </label>
-        <a class="badge-pill" href="#wrong" id="wrong-badge"><svg class="icon"><use href="#i-alert"/></svg>오답 <span id="wrong-badge-count">0</span></a>
+        <div class="pop-anchor">
+          <button class="round-btn" type="button" id="abbr-button" aria-expanded="false" aria-controls="abbr-pop" aria-label="품사 약어 설명" title="품사 약어 설명"><svg class="icon"><use href="#i-info"/></svg></button>
+          <div class="abbr-pop" id="abbr-pop" role="dialog" aria-labelledby="abbr-title" tabindex="-1" hidden>
+            <div class="pop-head">
+              <h3 id="abbr-title">품사 약어</h3>
+              <button class="icon-btn" type="button" id="abbr-close" aria-label="약어 설명 닫기"><svg class="icon"><use href="#i-close"/></svg></button>
+            </div>
+            <div class="abbr-scroll">
+              <table class="abbr-table">
+                <thead><tr><th>약어</th><th>설명</th></tr></thead>
+                <tbody id="abbr-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </header>
 
       <p class="load-error" id="load-error" role="alert" hidden></p>
 
       <!-- 홈 -->
       <section class="view" data-section="home" aria-labelledby="home-title">
-        <h2 class="section-title" id="home-title" hidden>홈</h2>
-        <div class="home-top">
-          <div class="card chart-card">
-            <p class="card-title">최근 퀴즈 정답률</p>
-            <div class="chart" id="home-chart"></div>
-          </div>
-          <div class="card stat"><span class="stat-value" id="home-total">0</span><span class="stat-label">전체 단어</span></div>
-          <div class="card stat"><span class="stat-value" id="home-learned">0</span><span class="stat-label">학습한 단어</span></div>
-          <div class="card today-card">
-            <span class="eyebrow">오늘의 단어</span>
-            <p class="today-word" id="today-word"></p>
-            <p class="today-mean" id="today-mean"></p>
-            <div class="meta-row" id="today-meta"></div>
-            <div class="today-actions">
-              <a class="btn btn-primary" href="#quiz">퀴즈 시작</a>
-              <a class="btn" href="#vocabulary">단어장 보기</a>
-            </div>
-          </div>
-          <div class="card stat"><span class="stat-value" id="home-accuracy">0%</span><span class="stat-label">퀴즈 정답률</span></div>
-          <div class="card stat"><span class="stat-value is-wrong" id="home-wrong">0</span><span class="stat-label">오답 단어</span></div>
+        <h2 class="sr-only" id="home-title">홈</h2>
+
+        <!-- 오늘의 학습 3단계: 끝낸 단계는 번호가 보라색으로 채워집니다 -->
+        <div class="card steps" aria-label="오늘의 학습">
+          <a class="step" href="#vocabulary" id="step-vocab">
+            <span class="step-num">1</span>
+            <span><b>단어 보기</b><span class="muted step-sub" id="step-vocab-sub"></span></span>
+          </a>
+          <a class="step" href="#quiz" id="step-quiz">
+            <span class="step-num">2</span>
+            <span><b>퀴즈 풀기</b><span class="muted step-sub" id="step-quiz-sub"></span></span>
+          </a>
+          <a class="step" href="#wrong" id="step-wrong">
+            <span class="step-num">3</span>
+            <span><b>오답 복습</b><span class="muted step-sub" id="step-wrong-sub"></span></span>
+          </a>
         </div>
 
-        <div class="section-head">
-          <h2 class="section-title">카테고리별 학습</h2>
-          <button class="btn" type="button" data-go-vocab="all">전체 보기 <svg class="icon"><use href="#i-arrow"/></svg></button>
+        <!-- 오늘의 단어와 핵심 숫자 4개 -->
+        <div class="card hero">
+          <div class="hero-word">
+            <span class="hero-label">오늘의 단어</span>
+            <p class="hero-es" id="today-word" lang="es"></p>
+            <p class="hero-mean" id="today-mean"></p>
+            <div class="meta-row" id="today-meta"></div>
+          </div>
+          <div class="hero-stats">
+            <div><span class="stat-value" id="home-total">0</span><span class="stat-label">전체 단어</span></div>
+            <div><span class="stat-value" id="home-learned">0</span><span class="stat-label">학습한 단어</span></div>
+            <div><span class="stat-value" id="home-accuracy">0%</span><span class="stat-label">퀴즈 정답률</span></div>
+            <div><span class="stat-value is-wrong" id="home-wrong">0</span><span class="stat-label">오답 단어</span></div>
+          </div>
         </div>
-        <div class="cat-grid" id="cat-grid"></div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2 class="section-title">카테고리별 학습</h2>
+            <button class="btn btn-small" type="button" data-go-vocab="all">전체 보기 <svg class="icon"><use href="#i-arrow"/></svg></button>
+          </div>
+          <ul class="cat-list" id="cat-grid"></ul>
+        </div>
       </section>
 
       <!-- 단어장 -->
@@ -92,27 +129,18 @@
         <div class="section-head">
           <h2 class="section-title">단어장</h2>
           <div class="head-actions">
-            <div class="pop-anchor">
-              <button class="btn" type="button" id="abbr-button" aria-expanded="false" aria-controls="abbr-pop"><svg class="icon"><use href="#i-info"/></svg>약어 설명</button>
-              <div class="abbr-pop" id="abbr-pop" role="dialog" aria-labelledby="abbr-title" tabindex="-1" hidden>
-                <div class="pop-head">
-                  <h3 id="abbr-title">품사 약어</h3>
-                  <button class="icon-btn" type="button" id="abbr-close" aria-label="약어 설명 닫기"><svg class="icon"><use href="#i-close"/></svg></button>
-                </div>
-                <div class="abbr-scroll">
-                  <table class="abbr-table">
-                    <thead><tr><th>약어</th><th>설명</th></tr></thead>
-                    <tbody id="abbr-body"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
             <button class="btn btn-primary" type="button" id="add-word"><svg class="icon"><use href="#i-plus"/></svg>단어 추가</button>
           </div>
         </div>
 
+        <!-- 카테고리: "전체"는 따로, 나머지는 여러 개를 함께 고를 수 있음 -->
+        <div class="cat-filter" role="group" aria-labelledby="cat-filter-label">
+          <span class="cat-filter-label" id="cat-filter-label">카테고리</span>
+          <button class="cat-chip cat-chip-all" type="button" id="cat-all" aria-pressed="true">전체</button>
+          <div class="cat-chips" id="vocab-cats"></div>
+        </div>
+
         <div class="toolbar">
-          <select id="vocab-category" aria-label="카테고리"></select>
           <select id="vocab-level" aria-label="난이도">
             <option value="all">전체 난이도</option>
             <option value="A1">A1</option>
@@ -135,16 +163,22 @@
           <button class="toggle" type="button" id="hide-ko" aria-pressed="false"><svg class="icon"><use href="#i-eye"/></svg>뜻 가리기</button>
           <button class="toggle" type="button" id="shuffle"><svg class="icon"><use href="#i-shuffle"/></svg>섞기</button>
           <button class="toggle" type="button" id="reset-order" disabled>원래 순서</button>
-          <span class="muted hint">가린 칸을 누르면 그 칸만 보여요. 줄을 누르면 상세 정보가 열려요.</span>
+          <span class="muted hint">가린 칸은 누르면 보여요. 외운 단어는 맨 뒤로 갑니다.</span>
+        </div>
+
+        <div class="memo-summary" id="memo-summary" role="progressbar" aria-label="외운 단어 비율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="memo-summary-text" id="memo-summary-text"></span>
+          <div class="progress"><i id="memo-summary-bar"></i></div>
         </div>
 
         <div class="card table-wrap">
           <table id="vocab-table" class="word-table">
-            <colgroup><col class="col-es"><col class="col-ko"><col class="col-cat"><col class="col-level"><col class="col-type"></colgroup>
-            <thead><tr><th>스페인어</th><th>뜻</th><th>카테고리</th><th>난이도</th><th>구분</th></tr></thead>
+            <colgroup><col class="col-num"><col class="col-es"><col class="col-ko"><col class="col-cat"><col class="col-level"><col class="col-type"><col class="col-memo"></colgroup>
+            <thead><tr><th>번호</th><th>스페인어</th><th>뜻</th><th>카테고리</th><th>난이도</th><th>구분</th><th class="memo-head">외운 단어</th></tr></thead>
             <tbody id="vocab-body"></tbody>
           </table>
         </div>
+        <nav class="pager" id="vocab-pager" aria-label="단어장 페이지"></nav>
       </section>
 
       <!-- 퀴즈 -->
@@ -169,10 +203,13 @@
               <button type="button" data-quiz-count="30" aria-pressed="false">30문제</button>
             </div>
           </div>
-          <label class="setting">
-            <span class="setting-label">출제 범위</span>
-            <select id="quiz-scope"></select>
-          </label>
+          <div class="setting setting-top" role="group" aria-labelledby="scope-label">
+            <span class="setting-label" id="scope-label">출제 범위</span>
+            <div class="scope-chips">
+              <button class="cat-chip cat-chip-all" type="button" id="scope-all" aria-pressed="true">전체</button>
+              <div class="cat-chips" id="quiz-scopes"></div>
+            </div>
+          </div>
           <p class="muted" id="quiz-available"></p>
           <p class="form-message" id="quiz-setup-message" role="status" hidden></p>
           <div>
@@ -306,6 +343,7 @@
       </div>
       <p class="detail-line" id="detail-title"></p>
       <div class="meta-row" id="detail-meta"></div>
+      <div class="conj" id="detail-conj" hidden></div>
       <p class="muted" id="detail-note"></p>
       <div class="dialog-actions" id="detail-actions" hidden>
         <button class="btn" type="button" id="detail-edit">수정</button>
