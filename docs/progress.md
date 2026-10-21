@@ -108,6 +108,18 @@
 - 상단 오답 배지를 빼고 약어 설명 버튼(아이콘만)을 상단으로 옮겼습니다.
 - 테스트: 기능 26개 항목과 5개 화면 x 5개 폭 레이아웃을 확인했습니다. 테스트 전 저장 데이터는 모두 백업했다가 그대로 되돌렸습니다.
 
+### 8단계: GitHub Pages 배포 및 인수인계 문서 완성
+
+- GitHub CLI 로그인(bluerose219, repo 권한)을 확인하고, 같은 이름의 저장소가 없음을 확인한 뒤 사용자 승인을 받아 공개 저장소를 만들었습니다.
+  - 저장소: https://github.com/bluerose219/palabrita
+  - push한 브랜치: main, feature/design-home, feature/words-data, feature/vocabulary, feature/quiz, feature/wrong-answers-stats, feature/responsive-test, fix/accent-regex, feature/vocab-paging
+- GitHub Pages를 main 브랜치 루트로 켰고, 첫 빌드가 built 상태가 되었습니다.
+  - 배포 주소: https://bluerose219.github.io/palabrita/
+  - index.html, data/words.json, js 파일이 모두 200 응답이고 UTF-8로 전달됩니다.
+- 공개 주소에서 Chrome으로 주요 기능 12개(홈 3단계와 숫자, 아이콘, 단어장 페이지, 동사 변화표, 악센트 없는 검색, 외운 단어, 약어 설명, 객관식 퀴즈, 오답노트, 통계 막대그래프, 퀴즈 후 홈 갱신)를 확인했고 콘솔 오류는 없었습니다. 새로고침 후 기록이 유지되는 것도 확인했습니다.
+- 공개 주소에서 테스트하며 생긴 저장값은 테스트 후 모두 지워 처음 상태(저장값 없음)로 되돌렸습니다.
+- README에 배포 주소를 적고, handover.md를 최종 내용으로 완성했습니다.
+
 ## 문제 해결 기록
 
 | 날짜 | 문제 | 원인 | 해결 |

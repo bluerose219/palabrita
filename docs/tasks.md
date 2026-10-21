@@ -95,8 +95,8 @@
 
 ## 8단계: GitHub Pages 배포 및 인수인계 문서 완성
 
-- [ ] GitHub 연결 상태 확인과 사용자 승인
-- [ ] 원격 저장소 생성과 push
-- [ ] GitHub Pages 설정
-- [ ] 공개 URL에서 동작 확인
-- [ ] README 배포 URL, handover.md, progress.md 완성
+- [x] GitHub 연결 상태 확인과 사용자 승인 (공개 저장소로 승인)
+- [x] 원격 저장소 생성과 push (main과 기능 브랜치 8개)
+- [x] GitHub Pages 설정 (main 브랜치 루트)
+- [x] 공개 URL에서 동작 확인
+- [x] README 배포 URL, handover.md, progress.md 완성
