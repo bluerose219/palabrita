@@ -212,6 +212,28 @@ palabrita/
 | `--shadow` | 0 10px 30px rgba(110,96,190,0.12) | 그림자 |
 | `--blur` | blur(20px) | 유리 효과 |
 
-- 아이콘: 라인 스타일 SVG (stroke 1.8, 둥근 끝)
+- 아이콘: 라인 스타일 SVG (stroke 1.8, 둥근 끝). `index.html` 맨 위의 SVG 스프라이트(`<symbol id="i-...">`)에 모아 두고 `<svg class="icon"><use href="#i-home"/></svg>`로 씁니다. 외부 파일로 분리하면 `file://`에서 열 때 아이콘이 보이지 않아 한 파일 안에 둡니다.
 - 애니메이션: hover 전환만 사용, `prefers-reduced-motion`이면 끔
-- 반응형: 1024px 이하 아이콘만 있는 사이드바, 768px 이하 하단 탭 바와 1열 카드
+- 반응형: 1100px 이하 홈 카드 2열, 1024px 이하 아이콘만 있는 사이드바, 768px 이하 하단 탭 바와 1열 카드
+- 주의: `backdrop-filter`가 있는 요소 안에서는 `position: fixed`가 화면이 아니라 그 요소 기준으로 배치됩니다. 그래서 768px 이하에서는 `.app`의 블러를 끄고 하단 탭 바를 화면에 고정합니다.
+
+### 6.1 공통 컴포넌트 (`style.css`)
+
+| 클래스 | 용도 |
+|---|---|
+| `.card` | 유리 카드 |
+| `.btn`, `.btn-primary`, `.btn-small` | 버튼 (기본, 강조, 작은 버튼) |
+| `.chip`, `.chip-sky` | 카테고리, 난이도 표시 |
+| `.progress` | 진행률 바 (`<div class="progress"><i style="width:40%"></i></div>`) |
+| `.stat`, `.stat-value`, `.stat-label` | 숫자 통계 카드 |
+| `.section-head`, `.section-title` | 구역 제목 줄 |
+| `.muted`, `.eyebrow` | 보조 글자, 작은 머리글 |
+| `.icon` | SVG 아이콘 |
+| `.thumb-<카테고리 키>` | 카테고리 카드의 그라데이션 그림 |
+
+### 6.2 공통 함수
+
+| 함수 | 파일 | 설명 |
+|---|---|---|
+| `Stats.drawAccuracyChart(targetId, labels, values)` | `stats.js` | 정답률(0~100) 선 그래프. 홈과 통계 화면에서 함께 씀 |
+| `App.showView(view)` | `app.js` | 화면 전환과 메뉴 활성 표시 |
