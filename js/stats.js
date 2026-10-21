@@ -37,6 +37,34 @@ const Stats = {
     };
   },
 
+  // 한 문제에 답할 때마다 부릅니다.
+  recordAnswer(wordId, correct) {
+    const stats = Storage.getStats();
+    stats.totalQuestions++;
+    if (correct) {
+      stats.correctAnswers++;
+      if (!stats.learnedIds.includes(wordId)) {
+        stats.learnedIds.push(wordId);
+      }
+    }
+    Storage.saveStats(stats);
+  },
+
+  // 퀴즈를 끝까지 풀면 부릅니다. result: { mode, total, correct, review, cleared }
+  recordQuiz(result) {
+    const stats = Storage.getStats();
+    const date = Stats.kstDateKey(Date.now());
+    stats.quizCount++;
+    stats.history.push({ date: date, mode: result.mode, total: result.total, correct: result.correct, review: result.review });
+    if (result.review) {
+      stats.reviewHistory.push({ date: date, mode: result.mode, total: result.total, correct: result.correct, cleared: result.cleared });
+    }
+    // 기록이 너무 길어지지 않게 최근 200개만 남깁니다.
+    stats.history = stats.history.slice(-200);
+    stats.reviewHistory = stats.reviewHistory.slice(-200);
+    Storage.saveStats(stats);
+  },
+
   // 최근 퀴즈 count회의 날짜(MM-DD)와 정답률
   getRecentAccuracy(count) {
     const recent = Storage.getStats().history.slice(-count);

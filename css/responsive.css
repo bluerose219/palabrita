@@ -148,6 +148,19 @@
     flex-direction: column;
   }
 
+  /* 퀴즈: 보기를 1열로, 단어 글자를 조금 작게 */
+  .options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quiz-spanish {
+    font-size: 32px;
+  }
+
+  .setting-label {
+    width: 100%;
+  }
+
   .toast {
     bottom: 92px;
   }
